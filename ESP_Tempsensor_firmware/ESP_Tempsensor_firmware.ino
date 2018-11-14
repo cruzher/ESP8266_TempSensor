@@ -23,9 +23,10 @@ void setup_wifi() {
   Serial.print("Connecting to ");
   Serial.println(WIFI_SSID);
 
+  WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASS);
   WiFi.hostname(WIFI_HOSTNAME);
-  WiFi.mode(WIFI_STA);
+  
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
