@@ -3,6 +3,7 @@
 
 #define WIFI_SSID            "ssid"
 #define WIFI_PASS            "pass"
+#define WIFI_HOSTNAME        "nodeXXXX"
 #define MQTT_HOST            "127.0.0.1"
 #define MQTT_TOPIC           "topic"
 #define MQTT_CLIENTID        "nodeXXXX"
@@ -23,6 +24,8 @@ void setup_wifi() {
   Serial.println(WIFI_SSID);
 
   WiFi.begin(WIFI_SSID, WIFI_PASS);
+  WiFi.hostname(WIFI_HOSTNAME);
+  WiFi.mode(WIFI_STA);
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
