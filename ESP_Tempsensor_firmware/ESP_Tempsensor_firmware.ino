@@ -8,6 +8,7 @@
 #define MQTT_CLIENTID     "nodeXXXX"
 #define MQTT_USERNAME     "username"
 #define MQTT_PASSWPRD     "password"
+#define SENSOR_PIN        A0;
 int     prevTemperature = 0;
 long    lastMsg =         0;
 
@@ -35,7 +36,7 @@ void setup_wifi() {
 void reconnect() {
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
-    if (client.connect(MQTT_CLIENTID)) {
+    if (client.connect(MQTT_CLIENTID, MQTT_USERNAME, MQTT_PASSWPRD)) {
       Serial.println("connected");
     } else {
       Serial.print("failed, rc=");
@@ -50,8 +51,7 @@ void reconnect() {
 void setup() {
   Serial.begin(115200);
   setup_wifi();
-  client.setServer(MQTT_HOST, 1883);
-  
+  client.setServer(MQTT_HOST, 1883); 
 }
 
 void loop() {
@@ -59,12 +59,25 @@ void loop() {
     reconnect();
   }
   client.loop();
-
-  long now = millis();
+  
+  long now  = millis();
+  char msg[50];
+  int average = 0;
+  char temperature[3];
   if (now - lastMsg > 2000) {
     lastMsg = now;
+
+    for (int i=1; i <= 10; i++){
+      int analogValue = analogRead(A0);
+      int temp = (3.3 * analogValue * 100) / 1024;
+      average = average + temp;
+    }
+    average = average/10;
+    
+    itoa(average, temperature, 10);
+    snprintf (msg, 50, temperature, 10);
     Serial.print("Publish message: ");
     Serial.println(msg);
-    client.publish("outTopic", msg);
+    client.publish(MQTT_TOPIC, msg);
   }
 }
