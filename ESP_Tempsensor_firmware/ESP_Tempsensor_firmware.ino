@@ -1,16 +1,17 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 
-#define WIFI_SSID         "ssid"
-#define WIFI_PASS         "pass"
-#define MQTT_HOST         "127.0.0.1"
-#define MQTT_TOPIC        "topic"
-#define MQTT_CLIENTID     "nodeXXXX"
-#define MQTT_USERNAME     "username"
-#define MQTT_PASSWPRD     "password"
-#define SENSOR_PIN        A0;
-int     prevTemperature = 0;
-long    lastMsg =         0;
+#define WIFI_SSID            "ssid"
+#define WIFI_PASS            "pass"
+#define MQTT_HOST            "127.0.0.1"
+#define MQTT_TOPIC           "topic"
+#define MQTT_CLIENTID        "nodeXXXX"
+#define MQTT_USERNAME        "user"
+#define MQTT_PASSWPRD        "pass"
+#define SENSOR_PIN           A0
+#define TEMPERATURE_OFFSET   0
+int     prevTemperature      = 0;
+long    lastMsg              = 0;
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -68,11 +69,11 @@ void loop() {
     lastMsg = now;
 
     for (int i=1; i <= 10; i++){
-      int analogValue = analogRead(A0);
+      int analogValue = analogRead(SENSOR_PIN);
       int temp = (3.3 * analogValue * 100) / 1024;
       average = average + temp;
     }
-    average = average/10;
+    average = (average/10) + TEMPERATURE_OFFSET;
     
     itoa(average, temperature, 10);
     snprintf (msg, 50, temperature, 10);
